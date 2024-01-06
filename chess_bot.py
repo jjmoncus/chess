@@ -9,6 +9,7 @@ class ChessPlayer:
         self.engine_path = "/usr/local/Cellar/stockfish/16/bin/stockfish"  # Update with the path to your Stockfish executable
         self.engine = chess.engine.SimpleEngine.popen_uci(self.engine_path)
         self.player_color = player_color
+        self.thinking_time = thinking_time
 
     def display_board(self):
         print(self.board)
@@ -17,10 +18,19 @@ class ChessPlayer:
         self.board.push_uci(move)
 
     def get_user_move(self):
-        return input("Enter your move: ")
+        while True:
+            user_input = input("Enter your move: ")
+            try:
+                if len(user_input) == 4 and user_input[0].isalpha() and user_input[1].isdigit() and user_input[2].isalpha() and user_input[3].isdigit():
+                    self.board.parse_uci(user_input)  # Attempt to parse the move
+                    return user_input
+                else:
+                    print("Invalid move format. Please enter a move in the format 'e2e4'.")
+            except chess.IllegalMoveError:
+                print("Illegal move. Please try again.")
 
     def get_best_move(self):
-        result = self.engine.play(self.board, chess.engine.Limit(time=2.0))
+        result = self.engine.play(self.board, chess.engine.Limit(time=self.thinking_time))
         return result.move.uci()
 
     def play_game(self):
@@ -46,5 +56,6 @@ class ChessPlayer:
 
 if __name__ == "__main__":
     player_color = input("Enter 'white' or 'black' to choose your color: ").lower()
+    thinking_time = float(input("Enter the thinking time for the engine (in seconds): "))
     player = ChessPlayer(player_color)
     player.play_game()
