@@ -1,10 +1,8 @@
-#!/Users/jerrymoncus/chess/venv/bin/python3
-
 import chess
 import chess.engine
 
 class ChessPlayer:
-    def __init__(self, player_color):
+    def __init__(self, player_color, thinking_time):
         self.board = chess.Board()
         self.engine_path = "/usr/local/Cellar/stockfish/16/bin/stockfish"  # Update with the path to your Stockfish executable
         self.engine = chess.engine.SimpleEngine.popen_uci(self.engine_path)
@@ -12,17 +10,21 @@ class ChessPlayer:
         self.thinking_time = thinking_time
 
     def display_board(self):
-        print(self.board)
+        board_str = str(self.board)
+        if self.player_color == "black":
+            board_str = "\n".join(reversed(board_str.split("\n")))
+
+        print(board_str)
 
     def make_move(self, move):
         self.board.push_uci(move)
 
     def get_user_move(self):
         while True:
-            user_input = input("Enter your move: ")
             try:
+                user_input = input("Enter your move: ")
                 if len(user_input) == 4 and user_input[0].isalpha() and user_input[1].isdigit() and user_input[2].isalpha() and user_input[3].isdigit():
-                    self.board.parse_uci(user_input)  # Attempt to parse the move
+                    self.board.parse_uci(user_input)
                     return user_input
                 else:
                     print("Invalid move format. Please enter a move in the format 'e2e4'.")
@@ -54,8 +56,11 @@ class ChessPlayer:
         # Close the engine when done
         self.engine.quit()
 
+# ...
+
 if __name__ == "__main__":
     player_color = input("Enter 'white' or 'black' to choose your color: ").lower()
     thinking_time = float(input("Enter the thinking time for the engine (in seconds): "))
-    player = ChessPlayer(player_color)
+    player = ChessPlayer(player_color, thinking_time)
     player.play_game()
+
