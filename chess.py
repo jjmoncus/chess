@@ -4,7 +4,7 @@ import chess.engine
 class ChessPlayer:
     def __init__(self):
         self.board = chess.Board()
-        self.engine_path = "/path/to/stockfish"  # Update with the path to your Stockfish executable
+        self.engine_path = "/usr/local/Cellar/stockfish/16/bin/stockfish"
         self.engine = chess.engine.SimpleEngine.popen_uci(self.engine_path)
 
     def display_board(self):
